@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tickets', function (Blueprint $table) {
-            $table->id('tick_id');
-            $table->unsignedBigInteger('usu_id');
+        Schema::create('subcategorias', function (Blueprint $table) {
+            $table->id('subcat_id');
             $table->unsignedBigInteger('cat_id');
-            $table->string('tick_titulo');
-            $table->text('tick_descrip');
-            $table->enum('tick_estado', ['abierto', 'cerrado'])->default('abierto');
+            $table->string('subcat_nom');
             $table->timestamps();
         
-            // Llaves foráneas
-            $table->foreign('usu_id')->references('usu_id')->on('usuarios');
+            // Llave foránea
             $table->foreign('cat_id')->references('cat_id')->on('categorias');
         });
         
@@ -32,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tickets');
+        Schema::dropIfExists('subcategorias');
     }
 };
