@@ -1,73 +1,75 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>INAAPS D.I. Soporte - Acceso</title>
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Login') }}</div>
+    <!-- Favicon -->
+    <link href="{{ asset('img/favicon.png') }}" rel="icon" type="image/png">
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
+    <!-- Compilar y cargar SASS con Vite -->
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+</head>
+<body>
 
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
+    <div class="page-center">
+        <div class="page-center-in">
+            <div class="container-fluid">
 
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                <!-- Formulario de inicio de sesión -->
+                <form class="sign-box" action="{{ route('login') }}" method="POST" id="login_form">
+                    @csrf  <!-- Protección CSRF para formularios en Laravel -->
 
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
+                    <input type="hidden" id="rol_id" name="rol_id" value="2"> <!-- Rol para el soporte, si es necesario -->
+
+                    <!-- Avatar del Login -->
+                    <div class="sign-avatar">
+                        <img src="{{ asset('public/2.jpg') }}" alt="Avatar" id="imgtipo">
+                    </div>
+
+                    <header class="sign-title">Acceso Soporte</header>
+
+                    <!-- Mostrar mensajes de error si los hay -->
+                    @if ($errors->any())
+                        <div class="alert alert-warning alert-icon alert-dismissible fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <i class="font-icon font-icon-warning"></i>
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
+                    @endif
 
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
+                    <!-- Input de Correo Electrónico -->
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" class="form-control" placeholder="Correo Electrónico" value="{{ old('email') }}" required autofocus>
+                    </div>
 
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                    <!-- Input de Contraseña -->
+                    <div class="form-group">
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña" required>
+                    </div>
 
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
+                    <!-- Enlace para restablecer contraseña -->
+                    <div class="form-group reset">
+                        <a href="{{ route('password.request') }}">Recuperar Contraseña</a>
+                    </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6 offset-md-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                    <!-- Botón de inicio de sesión -->
+                    <button type="submit" class="btn btn-rounded">Acceder</button>
 
-                                    <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Login') }}
-                                </button>
-
-                                @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
-@endsection
+
+    <!-- Scripts compilados con Vite -->
+    @vite(['resources/js/app.js'])
+</body>
+</html>

@@ -19,5 +19,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+        
+        // Llama a la semilla de soporte administrador
+        $this->call(SoporteAdministradorSeeder::class);
     }
 }

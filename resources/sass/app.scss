@@ -6,3 +6,58 @@
 
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
+
+// app.scss
+
+// Importar variables y mixins de Bootstrap o personalizadas
+@import "~bootstrap/scss/bootstrap";  // Si estás usando Bootstrap
+
+// Estilos personalizados para la página de login
+.page-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+    .sign-box {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+        .sign-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-control {
+            border-radius: 5px;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .reset {
+            text-align: right;
+            margin-bottom: 10px;
+
+            a {
+                color: #007bff;
+                font-size: 14px;
+                text-decoration: underline;
+
+                &:hover {
+                    color: #0056b3;
+                }
+            }
+        }
+    }
+}
