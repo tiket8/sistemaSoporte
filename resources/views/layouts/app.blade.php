@@ -14,10 +14,12 @@
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
     <div id="app">
+        <!-- Mostrar la barra de navegación solo si no estamos en el login -->
+        @if (!Request::is('login')) 
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -71,8 +73,10 @@
                 </div>
             </div>
         </nav>
+        @endif
 
-        <main class="py-4">
+        <!-- Contenido Principal -->
+        <main class="{{ Request::is('login') ? 'py-0' : 'py-4' }}">
             @yield('content')
         </main>
     </div>

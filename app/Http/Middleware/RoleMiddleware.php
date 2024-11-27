@@ -17,16 +17,20 @@ class RoleMiddleware
      */
     public function handle($request, Closure $next, $role)
     {
+        // Verificar si el usuario está autenticado
         if (!Auth::check()) {
             return redirect('/login');
         }
 
-        // Verifica si el usuario tiene el rol adecuado
+        // Obtener el usuario autenticado
         $user = Auth::user();
+
+        // Verificar si el usuario tiene el rol requerido
         if ($user->rol !== $role) {
-            return redirect('/home'); // Redirigir si no tiene el rol adecuado
+            abort(403, 'Acceso denegado. No tienes el rol adecuado.');
         }
 
+        // Permitir continuar con la solicitud
         return $next($request);
     }
 }

@@ -12,7 +12,7 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            vue: 'vue/dist/vue.esm-bundler.js', // Habilita la compilación en tiempo de ejecución
+            vue: 'vue/dist/vue.esm-bundler.js', 
         },
     },
 });
