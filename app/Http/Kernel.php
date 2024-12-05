@@ -63,14 +63,22 @@ class Kernel extends HttpKernel
         'auth' => \App\Http\Middleware\Authenticate::class, // Verifica la autenticación del usuario
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-        'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class, // Redirige a la home si ya está autenticado
+        'can' => \Illuminate\Auth\Middleware\Authorize::class, // Usa "can" para políticas y gates
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class, // Redirige si ya está autenticado
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class, // Solicita confirmación de la contraseña
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class, // Valida las URLs firmadas
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class, // Limita las solicitudes por tiempo
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class, // Verifica que el correo esté verificado
+    ];
 
-        // Añadimos nuestro middleware personalizado de roles
-        'role' => \App\Http\Middleware\RoleMiddleware::class, // Verifica el rol del usuario
+    /**
+     * Alias de middleware para configuraciones personalizadas y Spatie.
+     *
+     * @var array
+     */
+    protected $middlewareAliases = [
+        'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class, // Middleware para roles
+        'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class, // Middleware para permisos
+        'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class, // Middleware combinado
     ];
 }

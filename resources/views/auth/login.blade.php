@@ -12,7 +12,7 @@
         </div>
 
         <!-- Formulario -->
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('login.post') }}">
             @csrf
             <input type="email" id="email" class="fadeIn second" name="email" placeholder="Correo Electrónico" required>
             <input type="password" id="password" class="fadeIn third" name="password" placeholder="Contraseña" required>

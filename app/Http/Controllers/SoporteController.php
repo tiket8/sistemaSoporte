@@ -11,6 +11,6 @@ class SoporteController extends Controller
      */
     public function index()
     {
-        return view('soporte.dashboard'); // Cambia a la vista correspondiente
+        return view('soporte.dashboard'); 
     }
 }

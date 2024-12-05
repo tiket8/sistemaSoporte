@@ -13,6 +13,6 @@ class ClienteController extends Controller
      */
     public function index()
     {
-        return view('cliente.dashboard'); // Asumiendo que tienes una vista llamada 'cliente/dashboard.blade.php'
+        return view('cliente.dashboard'); 
     }
 }
