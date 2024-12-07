@@ -10,8 +10,8 @@ use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PriorityController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\SubCategoryController;
+use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\SubCategoriaController;
 
 // Rutas de autenticación
 Auth::routes(['verify' => true]);
@@ -36,13 +36,13 @@ Route::get('/priorities', [PriorityController::class, 'index'])
     ->middleware('auth')
     ->name('priorities.index');
 
-Route::get('/categories', [CategoryController::class, 'index'])
+Route::get('/categorias', [CategoriaController::class, 'index'])
     ->middleware('auth')
-    ->name('categories.index');
+    ->name('categoria.index');
 
-Route::get('/subcategories', [SubCategoryController::class, 'index'])
+Route::get('/subcategoria', [SubCategoriaController::class, 'index'])
     ->middleware('auth')
-    ->name('subcategories.index');
+    ->name('subcategoria.index');
 
 // Rutas para soporte
 Route::get('/soporte/dashboard', [SoporteController::class, 'index'])
@@ -54,15 +54,28 @@ Route::get('/cliente/dashboard', [ClienteController::class, 'index'])
     ->middleware('auth')
     ->name('cliente.dashboard');
 
-// Rutas compartidas entre roles
-Route::get('/tickets', [TicketController::class, 'index'])
-    ->middleware('auth')
-    ->name('tickets.index');
 
-Route::get('/tickets/create', [TicketController::class, 'create'])
-    ->middleware('auth')
-    ->name('tickets.create');
 });
+
+//Rutas de tikets 
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+    Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
+    Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+    Route::get('/tickets/{id}', [TicketController::class, 'show'])->name('tickets.show');
+});
+
+//ruta de categorias 
+
+
+Route::resource('subcategoria', SubCategoriaController::class)->middleware('auth');
+Route::resource('categoria', CategoriaController::class)->middleware('auth');
+Route::post('subcategoria/{id}/restore', [SubCategoriaController::class, 'restore'])->name('subcategoria.restore');
+Route::post('categoria/{id}/restore', [CategoriaController::class, 'restore'])->name('categoria.restore');
+
+
+
 
 // Rutas de verificación de correo electrónico
 Route::get('/email/verify', [VerificationController::class, 'show'])->name('verification.notice');
