@@ -4,34 +4,25 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
     use RegistersUsers;
 
     /**
-     * Where to redirect users after registration.
+     * Redirigir después del registro.
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/email/verify'; // Redirige a la página de verificación de correo.
 
     /**
-     * Create a new controller instance.
+     * Crear una nueva instancia del controlador.
      *
      * @return void
      */
@@ -41,7 +32,7 @@ class RegisterController extends Controller
     }
 
     /**
-     * Get a validator for an incoming registration request.
+     * Validador para los datos de registro.
      *
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
@@ -50,23 +41,53 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
+            'apellido' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'telefono' => ['nullable', 'string', 'max:15', 'regex:/^[0-9+\-()\s]*$/'], // Opcional, formato de teléfono válido.
+            'numero_empleado' => ['nullable', 'string', 'max:20'],
         ]);
     }
 
     /**
-     * Create a new user instance after a valid registration.
+     * Crear una nueva instancia de usuario después del registro válido.
      *
      * @param  array  $data
      * @return \App\Models\User
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        
+    return User::create([
+        'name' => $data['name'],
+        'apellido' => $data['apellido'],
+        'email' => $data['email'],
+        'password' => Hash::make($data['password']),
+        'telefono' => $data['telefono'] ?? null,
+        'numero_empleado' => $data['numero_empleado'] ?? null,
+        'rol' => 'cliente', // Valor por defecto.
+        'estado' => false,  // Estado inactivo por defecto.
+    ]);
+}
+
+    /**
+     * Sobrescribe el registro para incluir el evento de verificación de correo.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function register(Request $request)
+    {
+        // Valida los datos.
+        $this->validator($request->all())->validate();
+
+        // Crea el usuario.
+        $user = $this->create($request->all());
+
+        // Dispara el evento de registro (envío de email de verificación).
+        event(new Registered($user));
+
+        // Redirige al usuario para que verifique su correo.
+        return redirect($this->redirectPath())->with('status', 'Te hemos enviado un correo para verificar tu cuenta.');
     }
 }

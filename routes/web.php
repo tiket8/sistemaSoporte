@@ -12,70 +12,72 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\SubCategoriaController;
+use App\Http\Controllers\MailTestController;
 
 // Rutas de autenticación
 Auth::routes(['verify' => true]);
 
-// Ruta raíz que dirige al login
-Route::get('/', [LoginController::class, 'showLoginForm'])->name('home');
+// Ruta raíz que dirige al login o redirige según el rol
+Route::get('/', function () {
+    if (Auth::check()) {
+        switch (Auth::user()->rol) {
+            case 'admin':
+                return redirect()->route('admin.dashboard');
+            case 'soporte':
+                return redirect()->route('soporte.dashboard');
+            case 'cliente':
+                return redirect()->route('cliente.dashboard');
+        }
+    }
+    return redirect()->route('login');
+})->name('home');
+
+// Rutas de login y logout
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Grupo de rutas autenticadas
 Route::middleware(['auth'])->group(function () {
+
     // Rutas para administradores
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])
-    ->middleware('auth')
-    ->name('admin.dashboard');
+    Route::prefix('admin')->middleware('auth')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
-Route::get('/users', [UserController::class, 'index'])
-    ->middleware('auth')
-    ->name('users.index');
+        // Mantenimiento de usuarios
+        Route::resource('users', UserController::class)->only(['index', 'edit', 'update']);
+        Route::post('users/{id}/activate', [UserController::class, 'activate'])->name('users.activate');
+        Route::post('users/{id}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
 
-Route::get('/priorities', [PriorityController::class, 'index'])
-    ->middleware('auth')
-    ->name('priorities.index');
+        // Mantenimiento de prioridades
+        Route::get('/priorities', [PriorityController::class, 'index'])->name('priorities.index');
 
-Route::get('/categorias', [CategoriaController::class, 'index'])
-    ->middleware('auth')
-    ->name('categoria.index');
+        // Mantenimiento de categorías
+        Route::resource('categoria', CategoriaController::class);
+        Route::post('categoria/{id}/restore', [CategoriaController::class, 'restore'])->name('categoria.restore');
 
-Route::get('/subcategoria', [SubCategoriaController::class, 'index'])
-    ->middleware('auth')
-    ->name('subcategoria.index');
+        // Mantenimiento de subcategorías
+        Route::resource('subcategoria', SubCategoriaController::class);
+        Route::post('subcategoria/{id}/restore', [SubCategoriaController::class, 'restore'])->name('subcategoria.restore');
+    });
 
-// Rutas para soporte
-Route::get('/soporte/dashboard', [SoporteController::class, 'index'])
-    ->middleware('auth')
-    ->name('soporte.dashboard');
+    // Rutas para soporte
+    Route::get('/soporte/dashboard', [SoporteController::class, 'index'])->name('soporte.dashboard');
 
-// Rutas para clientes
-Route::get('/cliente/dashboard', [ClienteController::class, 'index'])
-    ->middleware('auth')
-    ->name('cliente.dashboard');
+    // Rutas para clientes
+    Route::get('/cliente/dashboard', [ClienteController::class, 'index'])->name('cliente.dashboard');
 
-
+    // Rutas de tickets
+    Route::prefix('tickets')->group(function () {
+        Route::get('/', [TicketController::class, 'index'])->name('tickets.index');
+        Route::get('/create', [TicketController::class, 'create'])->name('tickets.create');
+        Route::post('/', [TicketController::class, 'store'])->name('tickets.store');
+        Route::get('/{id}', [TicketController::class, 'show'])->name('tickets.show');
+    });
 });
 
-//Rutas de tikets 
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
-    Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
-    Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
-    Route::get('/tickets/{id}', [TicketController::class, 'show'])->name('tickets.show');
-});
-
-//ruta de categorias 
-
-
-Route::resource('subcategoria', SubCategoriaController::class)->middleware('auth');
-Route::resource('categoria', CategoriaController::class)->middleware('auth');
-Route::post('subcategoria/{id}/restore', [SubCategoriaController::class, 'restore'])->name('subcategoria.restore');
-Route::post('categoria/{id}/restore', [CategoriaController::class, 'restore'])->name('categoria.restore');
-
-
-
+// Prueba de correo
+Route::get('/send-test-email', [MailTestController::class, 'sendTestEmail'])->name('test.email');
 
 // Rutas de verificación de correo electrónico
 Route::get('/email/verify', [VerificationController::class, 'show'])->name('verification.notice');

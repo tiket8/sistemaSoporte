@@ -73,7 +73,7 @@ h2.inactive {
 }
 
 /* TIPOGRAFÍA DEL FORMULARIO */
-
+input[type="text"],
 input[type="email"],
 input[type="password"] {
     background-color: #f6f6f6;
@@ -252,4 +252,59 @@ a.underlineHover:hover {
 
 * {
   box-sizing: border-box;
+}
+
+/* Menu y Navbar */
+
+/* Estilos para el Sidebar */
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #343a40;
+  padding-top: 60px; /* Espacio para la navbar */
+}
+
+.sidebar ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sidebar ul li {
+  margin-bottom: 20px;
+}
+
+.sidebar ul li a,
+.sidebar ul li button {
+  padding: 10px 15px;
+  display: block;
+  color: white;
+  font-weight: 500;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li button:hover {
+  background-color: #495057;
+  text-decoration: none;
+}
+
+/* Estilos para el contenido principal */
+main {
+  margin-left: 250px; /* Espacio para el sidebar */
+  padding: 20px;
+}
+
+/* Barra superior */
+.navbar-brand img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.dropdown-menu {
+  min-width: 150px;
 }

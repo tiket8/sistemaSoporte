@@ -10,5 +10,16 @@ class AdminController extends Controller
     {
         return view('admin.dashboard');
     }
+
+    public function activateUser($id, Request $request)
+{
+    $user = User::findOrFail($id);
+    $user->estado = true; // Activa el usuario
+    $user->rol = $request->rol; // Asigna el rol
+    $user->save();
+
+    return redirect()->route('admin.users')->with('success', 'Usuario activado y rol asignado correctamente.');
+}
+
 }
 
