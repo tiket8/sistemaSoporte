@@ -77,7 +77,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Prueba de correo
-Route::get('/send-test-email', [MailTestController::class, 'sendTestEmail'])->name('test.email');
+//Route::get('/send-test-email', [MailTestController::class, 'sendTestEmail'])->name('test.email');
 
 // Rutas de verificación de correo electrónico
 Route::get('/email/verify', [VerificationController::class, 'show'])->name('verification.notice');
