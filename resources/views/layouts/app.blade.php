@@ -18,12 +18,12 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 40px;">
+                    <img src="{{ asset('img/Logotipo Nayarit_Lealtad_.png') }}" alt="Logo" style="height: 40px;">
                     INAAPS D.I.
                 </a>
                 <div class="dropdown ms-auto">
                     <button class="btn btn-light dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ asset('images/user-avatar.png') }}" alt="Avatar" class="rounded-circle" style="height: 30px; width: 30px;">
+                        <img src="{{ asset('img/user-avatar.png') }}" alt="Avatar" class="rounded-circle" style="height: 30px; width: 30px;">
                         {{ Auth::user()->name }}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
