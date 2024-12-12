@@ -25,4 +25,21 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
     ];
+
+    public function markEmailAsVerified()
+{
+    \Log::info('Verificando email para el usuario: ' . $this->email);
+
+    if ($this->hasVerifiedEmail()) {
+        return false;
+    }
+
+    $this->forceFill([
+        'email_verified_at' => $this->freshTimestamp(),
+    ])->save();
+
+    \Log::info('Email verificado para el usuario: ' . $this->email);
+
+    return true;
+}
 }
