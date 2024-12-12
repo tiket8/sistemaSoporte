@@ -46,6 +46,10 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'telefono' => ['nullable', 'string', 'max:15', 'regex:/^[0-9+\-()\s]*$/'], // Opcional, formato de teléfono válido.
             'numero_empleado' => ['nullable', 'string', 'max:20'],
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'email.unique' => 'El correo electrónico ya está registrado.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
         ]);
     }
 
