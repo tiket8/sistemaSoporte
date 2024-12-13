@@ -9,7 +9,7 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\PrioridadController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\SubCategoriaController;
 use App\Http\Controllers\MailTestController;
@@ -49,8 +49,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('users/{id}/activate', [UserController::class, 'activate'])->name('users.activate');
         Route::post('users/{id}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
 
-        // Mantenimiento de prioridades
-        Route::get('/priorities', [PriorityController::class, 'index'])->name('priorities.index');
+         // Mantenimiento de prioridades
+    Route::get('/prioridad', [PrioridadController::class, 'index'])->name('prioridad.index'); // Mostrar lista de prioridades
+    Route::post('/prioridad/store', [PrioridadController::class, 'store'])->name('prioridad.store'); // Guardar/editar prioridad
+    Route::delete('/prioridad/{id}', [PrioridadController::class, 'destroy'])->name('prioridad.destroy'); // Eliminar prioridad
+    Route::get('/prioridad/{id}/edit', [PrioridadController::class, 'edit'])->name('prioridad.edit'); // Obtener datos de prioridad para editar
 
         // Mantenimiento de categorías
         Route::resource('categoria', CategoriaController::class);

@@ -9,40 +9,30 @@ class Ticket extends Model
 {
     use HasFactory;
 
-    protected $table = 'tm_ticket';
-
     protected $fillable = [
-        'usu_id',
-        'cat_id',
-        'cats_id',
-        'tick_titulo',
-        'tick_descrip',
-        'tick_estado',
-        'fech_crea',
-        'usu_asig',
-        'fech_asig',
-        'prio_id',
-        'est',
+        'usu_id', 'cat_id', 'cats_id', 'tick_titulo', 
+        'tick_descrip', 'prio_id', 'tick_estado'
     ];
 
-    public $timestamps = false;
-
-    // Relación con usuarios
+    // Relaciones
     public function usuario()
     {
         return $this->belongsTo(User::class, 'usu_id');
     }
 
-    // Relación con categorías
     public function categoria()
     {
         return $this->belongsTo(Categoria::class, 'cat_id');
     }
 
-    // Relación con subcategorías
     public function subcategoria()
     {
-        return $this->belongsTo(SubCategoria::class, 'cats_id');
+        return $this->belongsTo(Subcategoria::class, 'cats_id');
+    }
+
+    public function prioridad()
+    {
+        return $this->belongsTo(Prioridad::class, 'prio_id');
     }
 
     public function documentos()
@@ -50,4 +40,3 @@ class Ticket extends Model
         return $this->hasMany(Documento::class, 'tick_id');
     }
 }
-

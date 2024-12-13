@@ -26,6 +26,11 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('prioridad.index') }}" class="text-white text-decoration-none">
+                <i class="bi bi-flag"></i> Mant. Prioridad
+            </a>
+        </li>
+        <li>
             <a href="{{ route('users.index') }}" class="text-white text-decoration-none">
                 <i class="fa fa-users"></i> <span>Mant. Usuario</span>
             </a>
