@@ -28,6 +28,7 @@
 
         <!-- Footer -->
         <div id="formFooter">
+            <p class="mt-3">Si tu cuenta no ha sido activada por el administrador, contacta al soporte técnico.</p>
             <a class="underlineHover" href="{{ route('login') }}">Volver al Inicio de Sesión</a>
         </div>
     </div>

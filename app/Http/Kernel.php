@@ -82,6 +82,6 @@ class Kernel extends HttpKernel
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class, // Middleware para roles
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class, // Middleware para permisos
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class, // Middleware combinado
-        
+        'check.status' => \App\Http\Middleware\CheckUserVerificationAndStatus::class,
     ];
 }

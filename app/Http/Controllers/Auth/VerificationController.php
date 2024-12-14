@@ -18,34 +18,27 @@ class VerificationController extends Controller
      * @return string
      */
     protected function redirectPath()
-    {
-        Log::info('Determinando ruta de redirección.', ['rol' => auth()->user()->rol ?? null]);
+        {
+            $rol = auth()->user()->rol ?? null;
 
-        switch (auth()->user()->rol) {
-            case 'admin':
-                return route('admin.dashboard');
-            case 'soporte':
-                return route('soporte.dashboard');
-            case 'cliente':
-                return route('cliente.dashboard');
-            default:
-                return '/';
+            return match ($rol) {
+                'admin' => route('admin.dashboard'),
+                'soporte' => route('soporte.dashboard'),
+                'cliente' => route('cliente.dashboard'),
+                default => '/',
+            };
         }
-    }
-
     /**
      * Constructor del controlador.
      *
      * @return void
      */
     public function __construct()
-    {
-        Log::info('Instanciando VerificationController.');
-
-        $this->middleware('auth');
-        $this->middleware('signed')->only('verify');
-        $this->middleware('throttle:6,1')->only('verify', 'resend');
-    }
+{
+    
+    $this->middleware('signed')->only('verify');
+    $this->middleware('throttle:6,1')->only('verify', 'resend');
+}
 
     /**
      * Sobrescribir el método de verificación para agregar logs.
@@ -54,46 +47,39 @@ class VerificationController extends Controller
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
     public function verify(Request $request)
+    {
+        $userId = $request->route('id');
+        $hash = $request->route('hash');
+    
+        $user = \App\Models\User::find($userId); 
+    
+        if (!$user || !hash_equals(sha1($user->email), $hash)) {
+            return abort(403, 'El enlace de verificación es inválido o ha expirado.');
+        }
+    
+        if ($user->hasVerifiedEmail()) {
+            return redirect('/login')->with('message', 'El correo ya fue verificado.');
+        }
+    
+        $user->markEmailAsVerified();
+        return redirect('/login')->with('message', 'Correo verificado exitosamente. Ahora puedes iniciar sesión.');
+    }
+
+    public function show(Request $request)
 {
-    Log::info('Iniciando verificación de correo.', [
-        'user_id' => $request->route('id'),
-        'hash' => $request->route('hash'),
-    ]);
+    $user = Auth::user();
 
-    $user = auth()->user();
-
+    // Verificar si el usuario está autenticado
     if (!$user) {
-        Log::error('Usuario no autenticado.');
-        return abort(403, 'Usuario no autenticado.');
+        return redirect('/login')->withErrors(['error' => 'Debes iniciar sesión para acceder a esta página.']);
     }
 
-    Log::info('Usuario autenticado.', ['user_id' => $user->id]);
-
-    if ($user->getKey() != $request->route('id')) {
-        Log::error('El ID del usuario no coincide.', [
-            'expected_id' => $request->route('id'),
-            'actual_id' => $user->getKey(),
-        ]);
-        return abort(403, 'El ID no coincide.');
-    }
-
-    if (!hash_equals(sha1($user->email), (string) $request->route('hash'))) {
-        Log::error('El hash no coincide.', [
-            'expected_hash' => sha1($user->email),
-            'actual_hash' => $request->route('hash'),
-        ]);
-        return abort(403, 'El hash no coincide.');
-    }
-
+    // Si el correo ya está verificado, redirige a la ruta correspondiente
     if ($user->hasVerifiedEmail()) {
-        Log::info('El correo ya fue verificado.', ['user_id' => $user->id]);
-        return redirect($this->redirectPath());
+        return redirect($this->redirectPath())->with('message', 'El correo ya ha sido verificado.');
     }
 
-    $user->markEmailAsVerified();
-
-    Log::info('Correo verificado exitosamente.', ['user_id' => $user->id]);
-
-    return redirect($this->redirectPath())->with('verified', true);
+    // Renderiza la vista de notificación para verificar el correo
+    return view('auth.verify-email');
 }
 }

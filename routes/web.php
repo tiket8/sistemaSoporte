@@ -13,6 +13,8 @@ use App\Http\Controllers\PrioridadController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\SubCategoriaController;
 use App\Http\Controllers\MailTestController;
+use App\Http\Controllers\CheckUserVerificationAndStatus;
+
 
 // Rutas de autenticación
 Auth::routes(['verify' => true]);
@@ -37,8 +39,22 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Rutas de verificación de correo electrónico
+Route::get('/email/verify', [VerificationController::class, 'show'])
+    ->middleware('auth')
+    ->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+    ->middleware(['signed', 'throttle:6,1']) // Sin 'auth'
+    ->name('verification.verify');
+
+Route::post('/email/resend', [VerificationController::class, 'resend'])
+    ->middleware(['auth', 'throttle:6,1']) // Aquí sí requiere 'auth'
+    ->name('verification.resend');
+
+
 // Grupo de rutas autenticadas
-Route::middleware(['auth'])->group(function () {
+Route::middleware('auth')->group(function () {
 
     // Rutas para administradores
     Route::prefix('admin')->middleware('auth')->group(function () {
@@ -103,15 +119,5 @@ Route::middleware(['auth'])->group(function () {
     // Prueba de correo
 //Route::get('/send-test-email', [MailTestController::class, 'sendTestEmail'])->name('test.email');
 
-// Rutas de verificación de correo electrónico
-Route::get('/email/verify', [VerificationController::class, 'show'])->name('verification.notice');
-Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-    ->middleware(['auth', 'signed'])
-    ->name('verification.verify');
-Route::post('/email/resend', [VerificationController::class, 'resend'])
-    ->middleware(['auth'])
-    ->name('verification.resend');
-
-    Route::get('/api/subcategorias/{catId}', [SubCategoriaController::class, 'getByCategory']);
 });
 
