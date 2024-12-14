@@ -69,7 +69,8 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class, // Valida las URLs firmadas
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class, // Limita las solicitudes por tiempo
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class, // Verifica que el correo esté verificado
-        'active' => \App\Http\Middleware\CheckActive::class,
+        
+        
     ];
 
     /**
@@ -81,5 +82,6 @@ class Kernel extends HttpKernel
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class, // Middleware para roles
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class, // Middleware para permisos
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class, // Middleware combinado
+        
     ];
 }
