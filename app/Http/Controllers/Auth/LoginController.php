@@ -33,11 +33,11 @@ class LoginController extends Controller
                 return '/login';
         }
         
-        \Log::info('Usuario autenticado:', [
+       /* \Log::info('Usuario autenticado:', [
             'user_id' => auth()->id(),
             'roles' => auth()->user()->getRoleNames()->toArray(),
             'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray(),
-        ]);
+        ]);*/
     }
 
     public function __construct()

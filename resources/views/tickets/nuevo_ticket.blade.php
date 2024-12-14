@@ -38,9 +38,7 @@
             <label for="cats_id" class="form-label">SubCategoría (*)</label>
             <select id="cats_id" name="cats_id" class="form-select @error('cats_id') is-invalid @enderror">
                 <option value="">Seleccionar</option>
-                @foreach ($subcategorias as $subcategoria)
-                    <option value="{{ $subcategoria->id }}" {{ old('cats_id') == $subcategoria->id ? 'selected' : '' }}>{{ $subcategoria->nombre }}</option>
-                @endforeach
+                <!-- Las subcategorías se cargarán dinámicamente -->
             </select>
             @error('cats_id')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -79,4 +77,31 @@
         <button type="submit" class="btn btn-primary">Guardar</button>
     </form>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.getElementById('cat_id').addEventListener('change', function () {
+        const categoriaId = this.value;
+
+        // Limpia el select de subcategorías
+        const subcategoriaSelect = document.getElementById('cats_id');
+        subcategoriaSelect.innerHTML = '<option value="">Seleccionar</option>';
+
+        if (categoriaId) {
+            // Realiza la solicitud AJAX para obtener las subcategorías
+            fetch(`/api/subcategorias/${categoriaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(subcategoria => {
+                        const option = document.createElement('option');
+                        option.value = subcategoria.id;
+                        option.textContent = subcategoria.nombre;
+                        subcategoriaSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error al cargar subcategorías:', error));
+        }
+    });
+</script>
 @endsection

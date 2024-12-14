@@ -86,4 +86,10 @@ public function restore($id)
     return redirect()->route('subcategoria.index')->with('success', 'Subcategoría activada correctamente.');
 }
 
+public function getByCategory($catId)
+{
+    $subcategorias = Subcategoria::where('cat_id', $catId)->where('estatus', true)->get();
+    return response()->json($subcategorias);
+}
+
 }

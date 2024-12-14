@@ -5,36 +5,43 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\Documento;
-use App\Models\Usuario;
 use App\Models\Categoria;
 use App\Models\Subcategoria;
 use App\Models\Prioridad;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
-    // Muestra todos los tickets
+    // Muestra los tickets del usuario autenticado según su rol
     public function index()
     {
-        // Recuperar tickets del usuario autenticado
-        $tickets = Auth::user()->rol === 'admin' 
-            ? Ticket::with(['usuario', 'categoria', 'subcategoria', 'prioridad'])->get()
-            : Ticket::with(['usuario', 'categoria', 'subcategoria', 'prioridad'])
-                ->where('usu_id', Auth::id())
+        $user = Auth::user();
+
+        if ($user->rol === 'admin') {
+            $tickets = Ticket::with(['usuario', 'categoria', 'subcategoria', 'prioridad'])->get();
+        } elseif ($user->rol === 'soporte') {
+            // Soporte ve tickets asignados o todos, según la lógica de negocio
+            $tickets = Ticket::with(['usuario', 'categoria', 'subcategoria', 'prioridad'])
+                ->where('assigned_to', $user->id) // Ajusta esto según el campo que indique asignación
                 ->get();
+        } else {
+            // Cliente solo ve sus propios tickets
+            $tickets = Ticket::with(['usuario', 'categoria', 'subcategoria', 'prioridad'])
+                ->where('usu_id', $user->id)
+                ->get();
+        }
 
         return view('tickets.index', compact('tickets'));
     }
 
-    // Muestra el formulario para crear un ticket
+    // Muestra el formulario para crear un nuevo ticket
     public function create()
     {
         $categorias = Categoria::all();
         $subcategorias = Subcategoria::all();
         $prioridades = Prioridad::all();
 
-        return view('tickets.create', compact('categorias', 'subcategorias', 'prioridades'));
+        return view('tickets.nuevo_ticket', compact('categorias', 'subcategorias', 'prioridades'));
     }
 
     // Guarda un nuevo ticket
@@ -71,19 +78,30 @@ class TicketController extends Controller
             }
         }
 
-        return redirect()->route('tickets.index')->with('success', 'Ticket creado exitosamente.');
+        // Redirigir según el rol del usuario
+        $roleRoute = Auth::user()->rol === 'soporte' ? 'soporte.tickets.index' : 'cliente.tickets.index';
+
+        return redirect()->route($roleRoute)->with('success', 'Ticket creado exitosamente.');
     }
 
     // Muestra el detalle de un ticket
     public function show(Ticket $ticket)
     {
-        $this->authorize('view', $ticket);
+        // Validar que el usuario tenga acceso al ticket
+        $user = Auth::user();
+        if ($user->rol === 'cliente' && $ticket->usu_id !== $user->id) {
+            abort(403, 'No tienes permiso para ver este ticket.');
+        }
+
+        if ($user->rol === 'soporte' && $ticket->assigned_to !== $user->id) {
+            abort(403, 'No tienes permiso para ver este ticket.');
+        }
 
         $documentos = $ticket->documentos;
-        return view('tickets.show', compact('ticket', 'documentos'));
+        return view('tickets.detalle_ticket', compact('ticket', 'documentos'));
     }
 
-    // Actualiza el estado de un ticket (cerrar, reabrir, asignar)
+    // Actualiza el estado de un ticket (cerrar o reabrir)
     public function update(Request $request, Ticket $ticket)
     {
         $validatedData = $request->validate([
@@ -92,6 +110,9 @@ class TicketController extends Controller
 
         $ticket->update(['tick_estado' => $validatedData['tick_estado']]);
 
-        return redirect()->route('tickets.index')->with('success', 'Estado del ticket actualizado.');
+        // Redirigir según el rol del usuario
+        $roleRoute = Auth::user()->rol === 'soporte' ? 'soporte.tickets.index' : 'cliente.tickets.index';
+
+        return redirect()->route($roleRoute)->with('success', 'Estado del ticket actualizado.');
     }
 }

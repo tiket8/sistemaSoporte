@@ -25,7 +25,19 @@ class VerificationController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/login';
+    protected function redirectPath()
+{
+    switch (auth()->user()->rol) {
+        case 'admin':
+            return route('admin.dashboard');
+        case 'soporte':
+            return route('soporte.dashboard');
+        case 'cliente':
+            return route('cliente.dashboard');
+        default:
+            return '/';
+    }
+}
 
     /**
      * Create a new controller instance.
