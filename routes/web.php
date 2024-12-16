@@ -53,6 +53,10 @@ Route::post('/email/resend', [VerificationController::class, 'resend'])
     ->name('verification.resend');
 
 
+// Ruta para obtener subcategorías por categoría en JSON
+Route::get('/api/subcategorias/{cat_id}', [SubCategoriaController::class, 'getByCategory']);
+
+
 // Grupo de rutas autenticadas
 Route::middleware('auth')->group(function () {
 
@@ -78,6 +82,7 @@ Route::middleware('auth')->group(function () {
         // Mantenimiento de subcategorías
         Route::resource('subcategoria', SubCategoriaController::class);
         Route::post('subcategoria/{id}/restore', [SubCategoriaController::class, 'restore'])->name('subcategoria.restore');
+        //Route::get('/subcategorias/{cat_id}', [SubCategoriaController::class, 'getByCategory']);
     });
 
         // Rutas para soporte

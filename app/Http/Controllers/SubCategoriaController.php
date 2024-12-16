@@ -88,7 +88,15 @@ public function restore($id)
 
 public function getByCategory($catId)
 {
-    $subcategorias = Subcategoria::where('cat_id', $catId)->where('estatus', true)->get();
+    
+    $subcategorias = Subcategoria::where('cat_id', $catId)
+                                  ->where('estatus', true) 
+                                  ->get(['subcat_id', 'subcat_nom']); 
+
+    if ($subcategorias->isEmpty()) {
+        return response()->json(['message' => 'No se encontraron subcategorías'], 404);
+        }
+
     return response()->json($subcategorias);
 }
 

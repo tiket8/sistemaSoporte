@@ -36,13 +36,20 @@ class TicketController extends Controller
 
     // Muestra el formulario para crear un nuevo ticket
     public function create()
-    {
-        $categorias = Categoria::all();
-        $subcategorias = Subcategoria::all();
-        $prioridades = Prioridad::all();
+{
+    // Obtener categorías activas
+    $categorias = Categoria::where('estatus', true)->get(['cat_id', 'cat_nom']);
 
-        return view('tickets.nuevo_ticket', compact('categorias', 'subcategorias', 'prioridades'));
-    }
+    // Obtener subcategorías activas
+    $subcategorias = Subcategoria::where('estatus', true)->get(['subcat_id', 'subcat_nom']);
+
+    // Obtener prioridades activas
+    $prioridades = Prioridad::where('est', 1)->get(['prio_id', 'prio_nom']);
+
+    return view('tickets.nuevo_ticket', compact('categorias', 'subcategorias', 'prioridades'));
+}
+
+
 
     // Guarda un nuevo ticket
     public function store(Request $request)
