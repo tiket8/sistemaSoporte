@@ -57,9 +57,9 @@ class TicketController extends Controller
         $validatedData = $request->validate([
             'tick_titulo' => 'required|string|max:255',
             'tick_descrip' => 'required|string',
-            'cat_id' => 'required|exists:categorias,id',
-            'cats_id' => 'nullable|exists:subcategorias,id',
-            'prio_id' => 'required|exists:prioridades,id',
+            'cat_id' => 'required|exists:categorias,cat_id',  
+            'cats_id' => 'nullable|exists:subcategorias,subcat_id', 
+            'prio_id' => 'required|exists:tm_prioridad,prio_id',
             'files.*' => 'nullable|file|mimes:jpg,png,pdf,docx|max:2048',
         ]);
 
@@ -70,7 +70,7 @@ class TicketController extends Controller
             'tick_titulo' => $validatedData['tick_titulo'],
             'tick_descrip' => $validatedData['tick_descrip'],
             'prio_id' => $validatedData['prio_id'],
-            'tick_estado' => 'Abierto',
+            'tick_estado' => 'abierto',
         ]);
 
         // Manejo de archivos adjuntos
@@ -92,22 +92,18 @@ class TicketController extends Controller
     }
 
     // Muestra el detalle de un ticket
-    public function show(Ticket $ticket)
+    public function show($tick_id)
     {
-        // Validar que el usuario tenga acceso al ticket
+        $ticket = Ticket::with(['usuario', 'categoria', 'subcategoria', 'prioridad'])->findOrFail($tick_id);
+
         $user = Auth::user();
         if ($user->rol === 'cliente' && $ticket->usu_id !== $user->id) {
-            abort(403, 'No tienes permiso para ver este ticket.');
-        }
-
-        if ($user->rol === 'soporte' && $ticket->assigned_to !== $user->id) {
             abort(403, 'No tienes permiso para ver este ticket.');
         }
 
         $documentos = $ticket->documentos;
         return view('tickets.detalle_ticket', compact('ticket', 'documentos'));
     }
-
     // Actualiza el estado de un ticket (cerrar o reabrir)
     public function update(Request $request, Ticket $ticket)
     {
