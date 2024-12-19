@@ -47,6 +47,7 @@ class Ticket extends Model
 
     public function documentos()
     {
-        return $this->hasMany(Documento::class, 'tick_id', 'tick_id');
+    return $this->hasMany(Documento::class, 'tick_id', 'tick_id');
     }
+
 }

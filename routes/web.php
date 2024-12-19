@@ -118,6 +118,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/create', [TicketController::class, 'create'])->name('tickets.create');
         Route::post('/', [TicketController::class, 'store'])->name('tickets.store');
         Route::get('/{id}', [TicketController::class, 'show'])->name('tickets.show');
+        Route::put('/tickets/{tick_id}', [TicketController::class, 'update'])->name('tickets.update');
         
     });
 

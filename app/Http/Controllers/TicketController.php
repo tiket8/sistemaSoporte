@@ -94,16 +94,23 @@ class TicketController extends Controller
     // Muestra el detalle de un ticket
     public function show($tick_id)
     {
-        $ticket = Ticket::with(['usuario', 'categoria', 'subcategoria', 'prioridad'])->findOrFail($tick_id);
+    $ticket = Ticket::with(['usuario', 'categoria', 'subcategoria', 'prioridad', 'documentos'])
+        ->findOrFail($tick_id);
 
-        $user = Auth::user();
-        if ($user->rol === 'cliente' && $ticket->usu_id !== $user->id) {
-            abort(403, 'No tienes permiso para ver este ticket.');
-        }
+    $user = Auth::user();
 
-        $documentos = $ticket->documentos;
-        return view('tickets.detalle_ticket', compact('ticket', 'documentos'));
+    // Validar acceso
+    if ($user->rol === 'cliente' && $ticket->usu_id !== $user->id) {
+        abort(403, 'No tienes permiso para ver este ticket.');
     }
+
+    if ($user->rol === 'soporte' && $ticket->assigned_to !== $user->id) {
+        abort(403, 'No tienes permiso para ver este ticket.');
+    }
+
+    return view('tickets.detalle_ticket', compact('ticket'));
+    }
+    
     // Actualiza el estado de un ticket (cerrar o reabrir)
     public function update(Request $request, Ticket $ticket)
     {

@@ -4,16 +4,20 @@
 
 @section('content')
 <div class="container">
-    <h3>Detalle Ticket - {{ $ticket->id }}</h3>
-    <p>Estado: <span class="badge {{ $ticket->tick_estado === 'Abierto' ? 'bg-success' : 'bg-danger' }}">{{ $ticket->tick_estado }}</span></p>
-    <p>Usuario: {{ $ticket->usuario->name }}</p>
+    <h3>Detalle Ticket - {{ $ticket->tick_id }}</h3>
+    <p>Estado: 
+        <span class="badge {{ $ticket->tick_estado === 'abierto' ? 'bg-success' : 'bg-danger' }}">
+            {{ ucfirst($ticket->tick_estado) }}
+        </span>
+    </p>
+    <p>Usuario: {{ $ticket->usuario->name ?? 'Usuario desconocido' }}</p>
     <p>Fecha de creación: {{ $ticket->created_at->format('d/m/Y H:i') }}</p>
 
     <h4>Detalles</h4>
     <p><strong>Título:</strong> {{ $ticket->tick_titulo }}</p>
-    <p><strong>Categoría:</strong> {{ $ticket->categoria->nombre }}</p>
-    <p><strong>Subcategoría:</strong> {{ $ticket->subcategoria->nombre ?? 'N/A' }}</p>
-    <p><strong>Prioridad:</strong> {{ $ticket->prioridad->nombre }}</p>
+    <p><strong>Categoría:</strong> {{ $ticket->categoria->cat_nom ?? 'N/A' }}</p>
+    <p><strong>Subcategoría:</strong> {{ $ticket->subcategoria->subcat_nom ?? 'N/A' }}</p>
+    <p><strong>Prioridad:</strong> {{ $ticket->prioridad->prio_nom ?? 'N/A' }}</p>
     <p><strong>Descripción:</strong> {{ $ticket->tick_descrip }}</p>
 
     <h4>Documentos</h4>
@@ -22,13 +26,15 @@
     @else
         <ul>
             @foreach ($ticket->documentos as $documento)
-                <li><a href="{{ asset('storage/' . $documento->ruta) }}" target="_blank">{{ $documento->nombre }}</a></li>
+                <li>
+                    <a href="{{ asset('storage/' . $documento->ruta) }}" target="_blank">{{ $documento->doc_nom }}</a>
+                </li>
             @endforeach
         </ul>
     @endif
 
     <h4>Agregar un comentario</h4>
-    <form method="POST" action="{{ route('tickets.update', $ticket->id) }}">
+    <form method="POST" action="{{ route('tickets.update', $ticket->tick_id) }}">
         @csrf
         @method('PUT')
 
